@@ -1,39 +1,16 @@
 import PageLayout from "../components/layout/PageLayout";
+import ErrorFallback from "../components/common/ErrorFallback"
 import {User} from "../types";
 import fetcher from "../utils/fetcher";
 import {UserDetail} from "../components/user/UserDetail";
 import useSWR from "swr";
-import {Suspense} from "react";
-import Loading from "../components/common/Loading";
 
 export default function Users() {
-    const { data: users, isLoading, error } = useSWR<User[]>('/users', fetcher)
-
-    if (error) {
-        return (
-            <PageLayout>
-                <div>{error.message}</div>
-            </PageLayout>
-        )
-    }
-
-    if (isLoading || !users) {
-        return (
-            <PageLayout>
-                <div>loading...</div>
-            </PageLayout>
-        )
-    }
+    const { data: users } = useSWR<User[]>('/users', fetcher, {suspense: true})
 
     return (
-        <PageLayout>
-            <Suspense fallback ={<Loading />}>
-            {
-                users.map(user =>
-                    <UserDetail key={user.id} user={user} />
-                )
-            }
-            </Suspense>
-        </PageLayout>
+        <div>
+            {users!.map(user => <UserDetail key={user.id} user={user} />)}
+        </div>
     )
 }
