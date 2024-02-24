@@ -1,12 +1,16 @@
-import PageLayout from "../components/layout/PageLayout";
-import ErrorFallback from "../components/common/ErrorFallback"
 import {User} from "../types";
 import fetcher from "../utils/fetcher";
 import {UserDetail} from "../components/user/UserDetail";
 import useSWR from "swr";
+import {useErrorBoundary} from "react-error-boundary";
 
 export default function Users() {
-    const { data: users } = useSWR<User[]>('/users', fetcher, {suspense: true})
+    const { data: users, error } = useSWR<User[]>('/users', fetcher, {suspense: true})
+    const {showBoundary} = useErrorBoundary()
+
+    if (error) {
+        showBoundary(error)
+    }
 
     return (
         <div>
