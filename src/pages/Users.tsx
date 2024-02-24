@@ -1,30 +1,34 @@
 import PageLayout from "../components/layout/PageLayout";
-import { useEffect, useState } from "react";
-import { User } from "../types";
+import {User} from "../types";
 import fetcher from "../utils/fetcher";
-import { UserDetail } from "../components/user/UserDetail";
+import {UserDetail} from "../components/user/UserDetail";
+import useSWR from "swr";
 
 export default function Users() {
-    const [users, setUsers] = useState<User[]>([])
-    const [error, setError] = useState<string>()
+    const { data: users, isLoading, error } = useSWR<User[]>('/users', fetcher)
 
-    useEffect(() => {
-        (async () => {
-            try {
-                const users = await fetcher<User[]>('/users')
-                setUsers(users)
-            } catch (err) {
-                console.error(err)
-                setError('알 수 없는 에러가 발생했습니다.')
-            }
-        })()
-    })
+    if (error) {
+        return (
+            <PageLayout>
+                <div>{error}</div>
+            </PageLayout>
+        )
+    }
+
+    if (isLoading || !users) {
+        return (
+            <PageLayout>
+                <div>loading...</div>
+            </PageLayout>
+        )
+    }
 
     return (
         <PageLayout>
-            {error ?
-                <div>{error}</div> :
-                users.map(user => <UserDetail user={user} />)
+            {
+                users.map(user =>
+                    <UserDetail key={user.id} user={user} />
+                )
             }
         </PageLayout>
     )
