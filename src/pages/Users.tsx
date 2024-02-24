@@ -3,6 +3,8 @@ import {User} from "../types";
 import fetcher from "../utils/fetcher";
 import {UserDetail} from "../components/user/UserDetail";
 import useSWR from "swr";
+import {Suspense} from "react";
+import Loading from "../components/common/Loading";
 
 export default function Users() {
     const { data: users, isLoading, error } = useSWR<User[]>('/users', fetcher)
@@ -25,11 +27,13 @@ export default function Users() {
 
     return (
         <PageLayout>
+            <Suspense fallback ={<Loading />}>
             {
                 users.map(user =>
                     <UserDetail key={user.id} user={user} />
                 )
             }
+            </Suspense>
         </PageLayout>
     )
 }
