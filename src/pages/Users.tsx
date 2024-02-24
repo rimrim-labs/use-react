@@ -12,7 +12,7 @@ export default function Users() {
     if (error) {
         return (
             <PageLayout>
-                <div>{error}</div>
+                <div>{error.message}</div>
             </PageLayout>
         )
     }
